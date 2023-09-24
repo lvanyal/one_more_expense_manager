@@ -1,7 +1,5 @@
 // Class that uses SharedPreferences to store and retrieve user data: categories list, expenses list, and budget.
 
-import 'dart:ui';
-
 import 'package:copilot/model/category.dart';
 import 'package:copilot/model/expense.dart';
 import 'package:flutter/material.dart';
@@ -61,17 +59,61 @@ class LocalDataSource {
     );
   }
 
-  // Returns budget from SharedPreferences.
-  double getBudget() {
-    return _sharedPreferences.getDouble(_budgetKey) ?? 0;
+  //Get expenses for specific month
+  List<Expense> getExpensesForMonth(DateTime month) {
+    final List<Expense> expenses = getExpenses();
+    return expenses
+        .where((Expense expense) =>
+            expense.date.month == month.month &&
+            expense.date.year == month.year)
+        .toList();
   }
 
-  // Saves budget to SharedPreferences.
-  Future<void> saveBudget(double budget) async {
+  //Get expenses for specific category
+  List<Expense> getExpensesForCategory(Category category) {
+    final List<Expense> expenses = getExpenses();
+    return expenses
+        .where((Expense expense) => expense.category.id == category.id)
+        .toList();
+  }
+
+  //get spent money for specific month
+  double getSpentMoneyForMonth(DateTime month) {
+    final List<Expense> expenses = getExpensesForMonth(month);
+    return expenses.fold<double>(
+      0,
+      (double previousValue, Expense element) => previousValue + element.amount,
+    );
+  }
+
+  //Delete expense
+  Future<void> deleteExpense(Expense expense) async {
+    final List<Expense> expenses = getExpenses();
+    expenses.removeWhere((Expense e) => e.id == expense.id);
+    await saveExpenses(expenses);
+  }
+
+  //delete category
+  Future<void> deleteCategory(Category category) async {
+    final List<Category> categories = getCategories();
+    categories.removeWhere((Category c) => c.id == category.id);
+    await saveCategories(categories);
+  }
+
+  //Save budget for specific month
+  Future<void> saveBudgetForMonth(DateTime month, double budget) async {
     await _sharedPreferences.setDouble(
-      _budgetKey,
+      _budgetKey + month.month.toString() + month.year.toString(),
       budget,
     );
+  }
+
+  //get budget for specific month
+  double getBudgetForMonth(DateTime month) {
+    return _sharedPreferences.getDouble(
+          _budgetKey + month.month.toString() + month.year.toString(),
+        ) ??
+        0;
   }
 
   // Calculate and returns total expenses amount.
@@ -90,7 +132,7 @@ class LocalDataSource {
 
   //Function that generates random initial data for budget, categories and expenses. and saves them to SharedPreferences.
   Future<void> generateInitialData() async {
-    await saveBudget(1000);
+    await saveBudgetForMonth(DateTime.now(), 1000);
     await saveCategories(
       <Category>[
         const Category(
