@@ -53,8 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
+    Text('Budget'),
     CategoriesScreen(),
-    Text('Setting Page'),
   ];
 
   void _onItemTapped(int index) {
@@ -85,16 +85,16 @@ class _MyHomePageState extends State<MyHomePage> {
           useLegacyColorScheme: false,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.payment),
               label: 'Expenses',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.money),
+              label: 'Budget',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.category),
               label: 'Categories',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
             ),
           ],
           currentIndex: _selectedIndex,

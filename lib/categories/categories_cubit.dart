@@ -25,7 +25,6 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   }
 
   void addCategory(Category category) async {
-    emit(CategoriesStateLoading());
     try {
       await categoriesRepository.addCategory(category);
       final currentState = state;
@@ -42,27 +41,22 @@ class CategoriesCubit extends Cubit<CategoriesState> {
     emit(CategoriesStateLoading());
     try {
       await categoriesRepository.updateCategory(category);
-      final currentState = state;
-      if (currentState is CategoriesStateLoaded) {
-        final newCategories = currentState.categories
-            .map((e) => e.id == category.id ? category : e)
-            .toList();
-        emit(CategoriesStateLoaded(categories: newCategories));
-      }
+
+      final newCategories = await categoriesRepository.getCategories();
+      emit(CategoriesStateLoaded(categories: newCategories));
     } catch (e) {
       emit(CategoriesStateError(e.toString()));
     }
   }
 
   void deleteCategory(Category category) async {
-    emit(CategoriesStateLoading());
     try {
-      await categoriesRepository.deleteCategory(category);
+      await categoriesRepository
+          .updateCategory(category.copyWith(deleted: true));
       final currentState = state;
       if (currentState is CategoriesStateLoaded) {
-        final newCategories = currentState.categories
-            .where((e) => e.id != category.id)
-            .toList();
+        final newCategories =
+            currentState.categories.where((e) => e.id != category.id).toList();
         emit(CategoriesStateLoaded(categories: newCategories));
       }
     } catch (e) {
@@ -80,6 +74,4 @@ class CategoriesCubit extends Cubit<CategoriesState> {
       ));
     }
   }
-
-
 }

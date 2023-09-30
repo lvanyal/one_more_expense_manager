@@ -47,18 +47,51 @@ class CategoriesScreen extends StatelessWidget {
         // If state is CategoriesStateLoaded, then show categories list.
         if (state is CategoriesStateLoaded) {
           return ListView.builder(
-            itemCount: state.categories.length,
+            itemCount: state.categories.length + 1,
             itemBuilder: (BuildContext context, int index) {
+              if (index == state.categories.length) {
+                return const _CreateCategoryItem();
+              }
+
               // Category.
               final category = state.categories[index];
 
               if (state.editedCategory?.id == category.id) {
                 // Editable Category tile.
-                return EditableCategoryItem(category: category);
-              } else {
+                return EditableCategoryItem(
+                    key: ValueKey('${category.id}editable'),
+                    category: category);
+              } //the last item is an add new category button
+              else {
                 // Category tile.
-                return CategoryItem(
-                    category: category, categoriesCubit: categoriesCubit);
+                return Dismissible(
+                  key: ValueKey(category.id),
+                  onDismissed: (direction) {
+                    categoriesCubit.deleteCategory(category);
+                  },
+                  //backgorund when swiping. red background with trash icons on side
+                  background: Container(
+                    color: Colors.red,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 16.0),
+                          child: Icon(Icons.delete, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  child: CategoryItem(
+                      category: category, categoriesCubit: categoriesCubit),
+                );
               }
             },
           );
@@ -69,6 +102,49 @@ class CategoriesScreen extends StatelessWidget {
       },
     );
   }
+}
+
+class _CreateCategoryItem extends StatelessWidget {
+  const _CreateCategoryItem({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      key: const ValueKey('add_category'),
+      // Category title.
+      title: GestureDetector(
+          onTap: () {
+            context.read<CategoriesCubit>().addCategory(_generateNewCaterory());
+          },
+          child: Text('Add new category',
+              style: Theme.of(context).textTheme.bodyMedium)),
+
+      // Category icon.
+      leading: Icon(
+        Icons.add,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      // Category trailing.
+      trailing: IconButton(
+        // Category edit button.
+        icon: const Icon(Icons.add),
+        onPressed: () {
+          context.read<CategoriesCubit>().addCategory(_generateNewCaterory());
+        },
+      ),
+    );
+  }
+}
+
+Category _generateNewCaterory() {
+  return Category(
+    name: 'New category',
+    color: Colors.blue,
+    icon: Icons.category,
+    id: DateTime.now().toString(),
+  );
 }
 
 class CategoryItem extends StatelessWidget {
@@ -139,7 +215,6 @@ class _EditableCategoryItemState extends State<EditableCategoryItem> {
       // Category title.
       title: TextFormField(
         controller: temporaryName,
-        initialValue: widget.category.name, 
         decoration: const InputDecoration(
           labelText: 'Category name',
         ),
@@ -148,21 +223,37 @@ class _EditableCategoryItemState extends State<EditableCategoryItem> {
       // Category icon.
       leading: IconButton(
         icon: Icon(
-          widget.category.icon,
-          color: widget.category.color,
+          temporaryIcon,
+          color: temporaryColor,
         ),
         onPressed: () async {
-          IconData? icon = await FlutterIconPicker.showIconPicker(context,
-              iconPackModes: [IconPack.material]);
+          IconData? icon =
+              await FlutterIconPicker.showIconPicker(context, iconPackModes: [
+            IconPack.fontAwesomeIcons,
+            IconPack.cupertino,
+            IconPack.material,
+          ]);
           if (!context.mounted) return;
           final color = await _openColorPicker(context);
+
+          setState(() {
+            temporaryIcon = icon ?? temporaryIcon;
+            temporaryColor = color ?? temporaryColor;
+          });
         },
       ),
       // Category trailing.
       trailing: IconButton(
         // Category edit button.
         icon: const Icon(Icons.check),
-        onPressed: () {},
+        onPressed: () {
+          final category = widget.category.copyWith(
+            name: temporaryName.text,
+            icon: temporaryIcon,
+            color: temporaryColor,
+          );
+          context.read<CategoriesCubit>().updateCategory(category);
+        },
       ),
     );
   }

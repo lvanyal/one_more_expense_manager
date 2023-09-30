@@ -134,12 +134,17 @@ class _CircularDiagram extends StatelessWidget {
             CircularStackEntry(
               <CircularSegmentEntry>[
                 CircularSegmentEntry(
-                  33.33,
+                  state.dashboardData.spentMoney /
+                      (state.dashboardData.budget + 0.00001) *
+                      100,
                   Theme.of(context).colorScheme.primary,
                   rankKey: 'completed',
                 ),
                 CircularSegmentEntry(
-                  66.67,
+                  (1 -
+                          state.dashboardData.spentMoney /
+                              (state.dashboardData.budget + 0.0001)) *
+                      100,
                   Theme.of(context).colorScheme.outline,
                   rankKey: 'remaining',
                 ),

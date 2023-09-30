@@ -8,27 +8,24 @@ class CategoriesRepository {
 
   Future<List<Category>> getCategories() async {
     final dataSource = await localDataSource;
-    return dataSource.getCategories();
+    return dataSource
+        .getCategories()
+        .where((element) => false == element.deleted)
+        .toList();
   }
 
   Future<void> addCategory(Category category) async {
     final dataSource = await localDataSource;
-    final categories = await dataSource.getCategories();
+    final categories =  dataSource.getCategories();
     final newCategories = [...categories, category];
     await dataSource.saveCategories(newCategories);
   }
 
   Future<void> updateCategory(Category category) async {
     final dataSource = await localDataSource;
-    final categories = await dataSource.getCategories();
-    final newCategories = categories.map((e) => e.id == category.id ? category : e).toList();
-    await dataSource.saveCategories(newCategories);
-  }
-
-  Future<void> deleteCategory(Category category) async {
-    final dataSource = await localDataSource;
-    final categories = await dataSource.getCategories();
-    final newCategories = categories.where((e) => e.id != category.id).toList();
+    final categories = dataSource.getCategories();
+    final newCategories =
+        categories.map((e) => e.id == category.id ? category : e).toList();
     await dataSource.saveCategories(newCategories);
   }
 
