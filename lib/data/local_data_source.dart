@@ -1,5 +1,6 @@
 // Class that uses SharedPreferences to store and retrieve user data: categories list, expenses list, and budget.
 
+import 'package:copilot/model/budget.dart';
 import 'package:copilot/model/category.dart';
 import 'package:copilot/model/expense.dart';
 import 'package:flutter/material.dart';
@@ -101,19 +102,22 @@ class LocalDataSource {
   }
 
   //Save budget for specific month
-  Future<void> saveBudgetForMonth(DateTime month, double budget) async {
-    await _sharedPreferences.setDouble(
+  Future<void> saveBudgetForMonth(DateTime month, Budget budget) async {
+    await _sharedPreferences.setString(
       _budgetKey + month.month.toString() + month.year.toString(),
-      budget,
+      budget.toJson(),
     );
   }
 
   //get budget for specific month
-  double getBudgetForMonth(DateTime month) {
-    return _sharedPreferences.getDouble(
-          _budgetKey + month.month.toString() + month.year.toString(),
-        ) ??
-        0;
+  Budget getBudgetForMonth(DateTime month) {
+    final String? budgetString = _sharedPreferences.getString(
+      _budgetKey + month.month.toString() + month.year.toString(),
+    );
+    if (budgetString == null) {
+      return const Budget(amount: 0, limitPerCategory: <Category, double>{});
+    }
+    return Budget.fromJson(budgetString);
   }
 
   // Calculate and returns total expenses amount.
@@ -125,6 +129,11 @@ class LocalDataSource {
     );
   }
 
+  //Save budget
+  Future<void> saveBudget(double budget) async {
+    await _sharedPreferences.setDouble(_budgetKey, budget);
+  }
+
   // clears SharedPreferences.
   Future<void> clear() async {
     await _sharedPreferences.clear();
@@ -132,7 +141,8 @@ class LocalDataSource {
 
   //Function that generates random initial data for budget, categories and expenses. and saves them to SharedPreferences.
   Future<void> generateInitialData() async {
-    await saveBudgetForMonth(DateTime.now(), 1000);
+    await saveBudgetForMonth(DateTime.now(),
+        const Budget(amount: 1000, limitPerCategory: <Category, double>{}));
     await saveCategories(
       <Category>[
         const Category(

@@ -135,7 +135,7 @@ class _CircularDiagram extends StatelessWidget {
               <CircularSegmentEntry>[
                 CircularSegmentEntry(
                   state.dashboardData.spentMoney /
-                      (state.dashboardData.budget + 0.00001) *
+                      (state.dashboardData.budget.amount + 0.00001) *
                       100,
                   Theme.of(context).colorScheme.primary,
                   rankKey: 'completed',
@@ -143,7 +143,7 @@ class _CircularDiagram extends StatelessWidget {
                 CircularSegmentEntry(
                   (1 -
                           state.dashboardData.spentMoney /
-                              (state.dashboardData.budget + 0.0001)) *
+                              (state.dashboardData.budget.amount + 0.0001)) *
                       100,
                   Theme.of(context).colorScheme.outline,
                   rankKey: 'remaining',
@@ -155,7 +155,7 @@ class _CircularDiagram extends StatelessWidget {
           chartType: CircularChartType.Radial,
           edgeStyle: SegmentEdgeStyle.round,
           holeLabel:
-              '\$${state.dashboardData.spentMoney}/${state.dashboardData.budget}',
+              '\$${state.dashboardData.spentMoney}/${state.dashboardData.budget.amount}',
           labelStyle: Theme.of(context).textTheme.bodyLarge,
           percentageValues: true,
         ),

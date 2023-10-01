@@ -1,3 +1,5 @@
+import 'package:copilot/budget/budget_cubit.dart';
+import 'package:copilot/budget/budget_screen.dart';
 import 'package:copilot/categories/categories_cubit.dart';
 import 'package:copilot/categories/categories_screen.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
@@ -30,8 +32,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
-      theme: FlexThemeData.light(scheme: FlexScheme.pinkM3),
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.pinkM3),
+      theme: FlexThemeData.light(scheme: FlexScheme.pinkM3, useMaterial3: true),
+      darkTheme:
+          FlexThemeData.dark(scheme: FlexScheme.pinkM3, useMaterial3: true),
       home: const MyHomePage(title: 'Track your expenses'),
     );
   }
@@ -53,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
-    Text('Budget'),
+    BudgetScreen(),
     CategoriesScreen(),
   ];
 
@@ -69,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => getIt<DashboardCubit>()),
-        BlocProvider(create: (_) => getIt<CategoriesCubit>())
+        BlocProvider(create: (_) => getIt<CategoriesCubit>()),
+        BlocProvider(create: (_) => getIt<BudgetCubit>())
       ],
       child: Scaffold(
         appBar: AppBar(

@@ -1,3 +1,4 @@
+import 'package:copilot/model/budget.dart';
 import 'package:copilot/model/expense.dart';
 
 class DashboardData {
@@ -5,7 +6,7 @@ class DashboardData {
   final DateTime selectedMonth;
 
   // Budget.
-  final double budget;
+  final Budget budget;
 
   // Spent money.
   final double spentMoney;

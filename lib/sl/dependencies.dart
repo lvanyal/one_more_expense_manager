@@ -1,8 +1,10 @@
 // application service locator
 // initialize dependencies using GetIt
 
+import 'package:copilot/budget/budget_cubit.dart';
 import 'package:copilot/categories/categories_cubit.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
+import 'package:copilot/data/budget_repository.dart';
 import 'package:copilot/data/categories_repository.dart';
 import 'package:copilot/data/dashboard_repository.dart';
 import 'package:copilot/data/local_data_source.dart';
@@ -25,8 +27,11 @@ Future<void> initializeDependencies() async {
       () => DashboardRepository(localDataSource: getIt.getAsync()));
   getIt.registerLazySingleton(
       () => CategoriesRepository(localDataSource: getIt.getAsync()));
+  getIt.registerLazySingleton(
+      () => BudgetRepository(localDataSource: getIt.getAsync()));
 
 
   getIt.registerLazySingleton(() => DashboardCubit(getIt()));
   getIt.registerLazySingleton(() => CategoriesCubit(getIt()));
+  getIt.registerLazySingleton(() => BudgetCubit(getIt(), getIt()));
 }
