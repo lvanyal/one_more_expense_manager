@@ -1,9 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // Dashboard state with selected month, budget, spent money and list of expenses.
-import 'dart:convert';
 
+import 'package:copilot/model/category.dart';
 import 'package:copilot/model/dashboard_data.dart';
-import 'package:copilot/model/expense.dart';
 
 sealed class DashboardState {}
 
@@ -26,19 +25,11 @@ class DashboardStateError extends DashboardState {
 
 class DashboardStateLoaded extends DashboardState {
   final DashboardData dashboardData;
+  final List<Category> categories;
 
   // Constructor.
-  DashboardStateLoaded({required this.dashboardData}) : super();
-
-  // Copy of the state with new selected month.
-  DashboardStateLoaded copyWith({
-    DateTime? selectedMonth,
-    double? budget,
-    double? spentMoney,
-    List<Expense>? expenses,
-  }) {
-    return DashboardStateLoaded(
-      dashboardData: dashboardData,
-    );
-  }
+  DashboardStateLoaded({
+    required this.dashboardData,
+    required this.categories,
+  }) : super();
 }

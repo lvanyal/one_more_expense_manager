@@ -134,6 +134,21 @@ class LocalDataSource {
     await _sharedPreferences.setDouble(_budgetKey, budget);
   }
 
+  //add Expense
+  Future<void> addExpense(Expense expense) async {
+    final List<Expense> expenses = getExpenses();
+    expenses.add(expense);
+    await saveExpenses(expenses);
+  }
+
+  //update expense
+  Future<void> updateExpense(Expense expense) async {
+    final List<Expense> expenses = getExpenses();
+    final int index = expenses.indexWhere((Expense e) => e.id == expense.id);
+    expenses[index] = expense;
+    await saveExpenses(expenses);
+  }
+
   // clears SharedPreferences.
   Future<void> clear() async {
     await _sharedPreferences.clear();
@@ -191,7 +206,7 @@ class LocalDataSource {
     );
     await saveExpenses(<Expense>[
       Expense(
-        name: 'Pizza',
+        description: 'Pizza',
         amount: 10,
         date: DateTime.now(),
         category: const Category(
@@ -203,7 +218,7 @@ class LocalDataSource {
         id: '1',
       ),
       Expense(
-        name: 'Bus',
+        description: 'Bus',
         amount: 2,
         date: DateTime.now(),
         category: const Category(
@@ -215,7 +230,7 @@ class LocalDataSource {
         id: '2',
       ),
       Expense(
-          name: 'Cinema',
+          description: 'Cinema',
           amount: 15,
           id: '3',
           date: DateTime.now(),

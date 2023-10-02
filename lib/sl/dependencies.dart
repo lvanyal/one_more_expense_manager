@@ -7,6 +7,7 @@ import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
 import 'package:copilot/data/budget_repository.dart';
 import 'package:copilot/data/categories_repository.dart';
 import 'package:copilot/data/dashboard_repository.dart';
+import 'package:copilot/data/expense_repository.dart';
 import 'package:copilot/data/local_data_source.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,9 +30,10 @@ Future<void> initializeDependencies() async {
       () => CategoriesRepository(localDataSource: getIt.getAsync()));
   getIt.registerLazySingleton(
       () => BudgetRepository(localDataSource: getIt.getAsync()));
+  getIt.registerLazySingleton(
+      () => ExpenseRepository(localDataSource: getIt.getAsync()));
 
-
-  getIt.registerLazySingleton(() => DashboardCubit(getIt()));
+  getIt.registerLazySingleton(() => DashboardCubit(getIt(), getIt(), getIt()));
   getIt.registerLazySingleton(() => CategoriesCubit(getIt()));
   getIt.registerLazySingleton(() => BudgetCubit(getIt(), getIt()));
 }

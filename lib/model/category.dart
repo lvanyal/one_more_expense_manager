@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_iconpicker/IconPicker/icons.dart';
 
 class Category {
   // Name of the category.

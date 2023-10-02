@@ -1,12 +1,15 @@
 // Dashboard screen with circular diagram at the top that shows money spent already this month and the rest of budget. And list of expenses below.
 
 import 'package:circular_chart_flutter/circular_chart_flutter.dart';
+import 'package:copilot/dashboard/expense_form.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
 import 'package:copilot/dashboard/bloc/dashboard_state.dart';
+import 'package:copilot/model/category.dart';
 import 'package:copilot/model/expense.dart';
 import 'package:copilot/widget/month_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -19,11 +22,28 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<DashboardCubit>();
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       // The FAB button with plus icon in the bottom right corner.
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          final state = cubit.state;
+          if (state is DashboardStateLoaded) {
+            final expense = await showModalBottomSheet<Expense?>(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) {
+                return ExpenseForm(
+                  state.categories,
+                );
+              },
+            );
+            if (expense != null) {
+              cubit.addExpense(expense);
+            }
+          }
+        },
         tooltip: 'Add expense',
         child: const Icon(Icons.add),
       ),
@@ -237,7 +257,27 @@ class ExpenseListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<DashboardCubit>();
+
     return ListTile(
+      onTap: () async {
+        final state = cubit.state;
+        if (state is DashboardStateLoaded) {
+          final expense = await showModalBottomSheet<Expense?>(
+            isScrollControlled: true,
+            context: context,
+            builder: (context) {
+              return ExpenseForm(
+                state.categories,
+                expense: this.expense,
+              );
+            },
+          );
+          if (expense != null) {
+            cubit.updateExpense(expense);
+          }
+        }
+      },
       leading: CircleAvatar(
           backgroundColor: expense.category.color.withOpacity(0.4),
           child: Icon(
@@ -245,7 +285,7 @@ class ExpenseListItem extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           )),
       title: Text(
-        expense.name,
+        expense.description,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       subtitle: Text(

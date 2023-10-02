@@ -6,7 +6,7 @@ import 'package:copilot/model/category.dart';
 
 class Expense {
   // Name of the expense.
-  final String name;
+  final String description;
 
   // Amount of the expense.
   final double amount;
@@ -22,7 +22,7 @@ class Expense {
 
   // Constructor.
   const Expense({
-    required this.name,
+    required this.description,
     required this.amount,
     required this.date,
     required this.category,
@@ -35,7 +35,7 @@ class Expense {
 
   // Returns expense from map.
   factory Expense.fromMap(Map<String, dynamic> map) => Expense(
-        name: map['name'] as String,
+        description: map['description'] as String,
         amount: map['amount'] as double,
         date: DateTime.parse(map['date'] as String),
         category: Category.fromMap(map['category'] as Map<String, dynamic>),
@@ -47,7 +47,7 @@ class Expense {
 
   // Returns expense as map.
   Map<String, dynamic> toMap() => <String, dynamic>{
-        'name': name,
+        'description': description,
         'amount': amount,
         'date': date.toIso8601String(),
         'category': category.toMap(),
@@ -57,6 +57,6 @@ class Expense {
   // Returns expense as string.
   @override
   String toString() {
-    return 'Expense{name: $name, amount: $amount, date: $date, category: $category, id: $id}';
+    return 'Expense{description: $description, amount: $amount, date: $date, category: $category, id: $id}';
   }
 }
