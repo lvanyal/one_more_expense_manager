@@ -1,16 +1,41 @@
-# copilot
+# Expense Manager
 
-"A new Flutter project."
+Expense Manager is an open-source Flutter-based application that helps you manage your finances effectively. You can set your monthly total budget, allocate budgets for different expense categories, track your expenses, and even create custom categories to tailor the app to your financial needs. The best part is that it's completely free to use, and anyone can benefit from it.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
+## Introduction
+
+Expense Manager is a powerful and user-friendly financial management tool designed to help individuals and households keep their expenses in check. With the ability to set monthly budgets, categorize expenses, and track spending, you can gain better control over your finances and make informed financial decisions.
+
+## Features
+
+- **Set Monthly Budget:** Define your monthly total budget to limit your spending and keep your finances on track.
+
+- **Budget Categories:** Allocate budgets for different expense categories (e.g., groceries, entertainment, bills) to manage your spending within each category.
+
+- **Expense Tracking:** Log your expenses quickly and efficiently, recording the amount, date, and category for each expenditure.
+
+- **Custom Categories:** Create custom expense categories to match your unique financial situation and priorities.
+
+- **Open Source:** The project is open source, built on Flutter, and available for anyone to use and contribute to.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+Before getting started with Expense Manager, make sure you have the following prerequisites:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Flutter](https://flutter.dev/docs/get-started/install): Install Flutter on your development machine.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
