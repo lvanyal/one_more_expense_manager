@@ -156,6 +156,11 @@ class LocalDataSource {
 
   //Function that generates random initial data for budget, categories and expenses. and saves them to SharedPreferences.
   Future<void> generateInitialData() async {
+    // if data already exists, do nothing
+    if (_sharedPreferences.getKeys().isNotEmpty) {
+      return;
+    }
+
     await saveBudgetForMonth(DateTime.now(),
         const Budget(amount: 1000, limitPerCategory: <Category, double>{}));
     await saveCategories(
