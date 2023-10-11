@@ -69,12 +69,11 @@ class _LoadedScreen extends StatelessWidget {
                 ),
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                initialValue: 1000.toString(),
+                initialValue: state.budget.amount.toString(),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
-                  categoryLimitsValidator(
-                      errorText: 'Budget exceeded', state: state)
+                  categoryLimitsValidator(state: state)
                 ]),
               ),
             ),
@@ -138,11 +137,12 @@ class _LoadedScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        initialValue: 100.toString(),
+                        initialValue:
+                            state.categories[entry.key]?.limit.toString(),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(),
+                          FormBuilderValidators.required(errorText: 'Required'),
                           FormBuilderValidators.numeric(),
                         ]),
                         onChanged: (newValue) {
@@ -167,13 +167,12 @@ class _LoadedScreen extends StatelessWidget {
   }
 
   void _validateForm() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _formKey.currentState?.saveAndValidate());
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _formKey.currentState?.saveAndValidate(focusOnInvalid: false));
   }
 
   FormFieldValidator<T> categoryLimitsValidator<T>({
     required BudgetStateLoaded state,
-    required String errorText,
   }) {
     return (T? valueCandidate) {
       // returns error text if sum of category limits is greater than total budget
@@ -182,7 +181,7 @@ class _LoadedScreen extends StatelessWidget {
           .map((e) => e.value.limit)
           .fold<double>(0, (previousValue, element) => previousValue + element);
       if (sum > state.budget.amount) {
-        return errorText;
+        return 'Budget exceeded by ${sum - state.budget.amount}';
       }
 
       return null;

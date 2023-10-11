@@ -20,33 +20,54 @@ class BudgetCubit extends Cubit<BudgetState> {
   void getBudget() async {
     try {
       final budget = await budgetRepository.getBudget();
-      final categories = await categoriesRepository.getCategories();
+      final allCategories = await categoriesRepository.getCategories();
+      final budgetCategories = budget.limitPerCategory;
 
-      // Categories hashmap. Where key is category and value if it's selected
-      final categoriesMap = Map.fromEntries(categories
-          .map((e) => MapEntry(e, CategoryLimit(limit: 100, selected: false))));
+      //all categories with selected and limit
+      final allCategoriesWithSelectedAndLimitEntries =
+          allCategories.map((category) {
+        final categoryLimit = budgetCategories[category];
 
-      emit(BudgetStateLoaded(budget: budget, categories: categoriesMap));
+        return MapEntry(category,
+            categoryLimit ?? CategoryLimit(limit: 100, selected: false));
+      });
+
+      final allCategoriesWithSelectedAndLimit =
+          Map<Category, CategoryLimit>.fromEntries(
+              allCategoriesWithSelectedAndLimitEntries);
+
+      emit(BudgetStateLoaded(
+          budget: budget, categories: allCategoriesWithSelectedAndLimit));
     } catch (e) {
       emit(BudgetStateError(e.toString()));
     }
   }
 
-  void updateCategory(Category key, bool selected, double limit) {
+  void updateCategory(Category key, bool selected, double limit) async {
     final currentState = state;
     if (currentState is BudgetStateLoaded) {
-      final newCategories =
-          Map<Category, CategoryLimit>.from(currentState.categories)
-            ..[key] = CategoryLimit(selected: selected, limit: limit);
+      final newCategoriesLlimits = currentState.categories.map(
+          (category, categoryLimit) => MapEntry(
+              category,
+              category == key
+                  ? categoryLimit.copyWith(selected: selected, limit: limit)
+                  : categoryLimit));
+
+      // update budget in db
+      final newBudget =
+          currentState.budget.copyWith(limitPerCategory: newCategoriesLlimits);
+      await budgetRepository.saveBudgetForCurrentMonth(newBudget);
+
       emit(BudgetStateLoaded(
-          budget: currentState.budget, categories: newCategories));
+          budget: currentState.budget, categories: newCategoriesLlimits));
     }
   }
 
-  void updateBudget(double parse) {
+  void updateBudget(double parse) async {
     final currentState = state;
     if (currentState is BudgetStateLoaded) {
       final newBudget = currentState.budget.copyWith(amount: parse);
+      await budgetRepository.saveBudgetForCurrentMonth(newBudget);
       emit(BudgetStateLoaded(
           budget: newBudget, categories: currentState.categories));
     }

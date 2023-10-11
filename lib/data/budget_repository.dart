@@ -11,9 +11,9 @@ class BudgetRepository {
     return dataSource.getBudgetForMonth(DateTime.now());
   }
 
-  Future<void> saveBudget(double budget) async {
+  Future<void> saveBudgetForCurrentMonth(Budget budget) async {
     final dataSource = await localDataSource;
 
-    await dataSource.saveBudget(budget);
+    await dataSource.saveBudgetForMonth(DateTime.now(), budget);
   }
 }

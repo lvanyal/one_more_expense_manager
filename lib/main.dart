@@ -9,12 +9,16 @@ import 'package:copilot/infrastructure/simple_bloc_observer.dart';
 import 'package:copilot/sl/dependencies.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initializeDependencies();
-  getIt
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  await getIt
       .getAsync<LocalDataSource>()
       .then((source) => source.generateInitialData());
 
@@ -77,7 +81,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(switch (_selectedIndex) {
+            0 => 'See your expenses',
+            1 => 'Set your budget',
+            2 => 'Create your categories',
+            int() => 'Track your expenses'
+          }),
         ),
         // The body of the screen with bottom navigation bar with 3 pages: Home, Settings and About. And FAB button with plus icon in the bottom right corner.
         body: Center(

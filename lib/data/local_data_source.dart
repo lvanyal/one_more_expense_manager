@@ -115,7 +115,7 @@ class LocalDataSource {
       _budgetKey + month.month.toString() + month.year.toString(),
     );
     if (budgetString == null) {
-      return const Budget(amount: 0, limitPerCategory: <Category, double>{});
+      return const Budget(amount: 0, limitPerCategory: {});
     }
     return Budget.fromJson(budgetString);
   }
@@ -129,9 +129,12 @@ class LocalDataSource {
     );
   }
 
-  //Save budget
-  Future<void> saveBudget(double budget) async {
-    await _sharedPreferences.setDouble(_budgetKey, budget);
+  //Save budget for specific month
+  Future<void> saveBudget(Budget budget) async {
+    await _sharedPreferences.setString(
+      _budgetKey,
+      budget.toJson(),
+    );
   }
 
   //add Expense
@@ -161,8 +164,8 @@ class LocalDataSource {
       return;
     }
 
-    await saveBudgetForMonth(DateTime.now(),
-        const Budget(amount: 1000, limitPerCategory: <Category, double>{}));
+    await saveBudgetForMonth(
+        DateTime.now(), const Budget(amount: 1000,  limitPerCategory: {}));
     await saveCategories(
       <Category>[
         const Category(

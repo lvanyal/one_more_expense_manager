@@ -1,12 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+
 import 'package:copilot/model/category.dart';
-import 'package:flutter/foundation.dart' as foundation;
+import 'package:copilot/model/category_limit.dart';
 
 class Budget {
   final double amount;
-  final Map<Category, double> limitPerCategory;
+  final Map<Category, CategoryLimit> limitPerCategory;
 
   const Budget({
     required this.amount,
@@ -15,7 +17,7 @@ class Budget {
 
   Budget copyWith({
     double? amount,
-    Map<Category, double>? limitPerCategory,
+    Map<Category, CategoryLimit>? limitPerCategory,
   }) {
     return Budget(
       amount: amount ?? this.amount,
@@ -24,24 +26,21 @@ class Budget {
   }
 
   Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
+    return <String, dynamic>{
       'amount': amount,
-      'limitPerCategory': jsonEncode(
-          limitPerCategory.map((key, value) => MapEntry(key.toMap(), value))),
+      'limitPerCategory': limitPerCategory.map(
+          (key, value) => MapEntry(json.encode(key.toMap()), value.toMap())),
     };
-    return map;
   }
 
+  //fromMap
   factory Budget.fromMap(Map<String, dynamic> map) {
-    final limitsJson = jsonDecode(map['limitPerCategory']);
-    var parsedLimits = limitsJson.map(
-        (key, value) => MapEntry(Category.fromJson(key), double.parse(value)));
-    final limits = parsedLimits.length == 0
-        ? <Category, double>{}
-        : Map<Category, double>.fromEntries(parsedLimits);
     return Budget(
       amount: map['amount'] as double,
-      limitPerCategory: limits,
+      limitPerCategory: (map['limitPerCategory'] as Map<String, dynamic>).map(
+          (key, value) => MapEntry(
+              Category.fromMap(json.decode(key) as Map<String, dynamic>),
+              CategoryLimit.fromMap(value as Map<String, dynamic>))),
     );
   }
 
@@ -57,9 +56,10 @@ class Budget {
   @override
   bool operator ==(covariant Budget other) {
     if (identical(this, other)) return true;
+    final mapEquals = const DeepCollectionEquality().equals;
 
     return other.amount == amount &&
-        foundation.mapEquals(other.limitPerCategory, limitPerCategory);
+        mapEquals(other.limitPerCategory, limitPerCategory);
   }
 
   @override
