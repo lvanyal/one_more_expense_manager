@@ -1,15 +1,15 @@
 // Dashboard screen with circular diagram at the top that shows money spent already this month and the rest of budget. And list of expenses below.
 
 import 'package:circular_chart_flutter/circular_chart_flutter.dart';
-import 'package:copilot/dashboard/expense_form.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
 import 'package:copilot/dashboard/bloc/dashboard_state.dart';
-import 'package:copilot/model/category.dart';
+import 'package:copilot/dashboard/expense_form.dart';
 import 'package:copilot/model/expense.dart';
 import 'package:copilot/widget/month_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -27,6 +27,7 @@ class DashboardScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       // The FAB button with plus icon in the bottom right corner.
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xffac255e),
         onPressed: () async {
           final state = cubit.state;
           if (state is DashboardStateLoaded) {
@@ -55,13 +56,58 @@ class DashboardScreen extends StatelessWidget {
             DashboardStateLoading() =>
               const LoadingShimmer(),
             DashboardStateError() => const Placeholder(),
-            DashboardStateLoaded() => Column(
-                children: <Widget>[
-                  // Circular diagram at the top that shows money spent already this month and the rest of budget.
-                  _CircularDiagram(state),
-                  // List of expenses below.
-                  _ExpensesList(state),
-                ],
+            DashboardStateLoaded() => Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment(0.8, 1),
+                      colors: <Color>[
+                        Color(0xff1f005c),
+                        Color(0xff5b0060),
+                        Color(0xff870160),
+                        Color(0xffac255e),
+                        Color(0xffca485c),
+                        Color(0xffe16b5c),
+                        Color(0xfff39060),
+                        Color(0xffffb56b),
+                      ],
+                      // Gradient from https://learnui.design/tools/gradient-generator.html
+                      tileMode: TileMode.mirror,
+                    ),
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      // Circular diagram at the top that shows money spent already this month and the rest of budget.
+                      const SizedBox(
+                        height: 54,
+                      ),
+                      _CircularDiagram(state),
+                      // List of expenses below.
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Expanded(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              color: Color(0xFF1a1a1a),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(24.0),
+                                  topRight: Radius.circular(24.0)),
+                              boxShadow: [BoxShadow()]),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 16),
+                              _MonthSelector(state),
+                              _ExpensesList(state),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               )
           };
         },
@@ -136,6 +182,62 @@ class LoadingShimmer extends StatelessWidget {
   }
 }
 
+class _MonthSelector extends StatelessWidget {
+  final DashboardStateLoaded state;
+
+  const _MonthSelector(this.state, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<DashboardCubit>();
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            IconButton.outlined(
+                onPressed: () {
+                  context.read<DashboardCubit>().previousMonth();
+                },
+                icon: const Icon(Icons.chevron_left)),
+            OutlinedButton.icon(
+                icon: const Icon(Icons.calendar_today),
+                onPressed: () async {
+                  final selectedMonth = await showMonthPicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2050),
+                  );
+                  if (selectedMonth != null) {
+                    cubit.getDashboardData(selectedMonth);
+                  }
+                },
+                label: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    //Format date, take name of the month. Example: January 2021.
+                    _monthFormatter.format(state.dashboardData.selectedMonth),
+                    style: GoogleFonts.lato(
+                      textStyle: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                )),
+            IconButton.outlined(
+                onPressed: () {
+                  context.read<DashboardCubit>().nextMonth();
+                },
+                icon: const Icon(Icons.chevron_right)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // Circular diagram at the top that shows money spent already this month and the rest of budget.
 class _CircularDiagram extends StatelessWidget {
   final DashboardStateLoaded state;
@@ -144,82 +246,64 @@ class _CircularDiagram extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<DashboardCubit>();
-    return Column(
-      children: [
-        AnimatedCircularChart(
-          key: UniqueKey(),
-          size: const Size.square(200),
-          initialChartData: <CircularStackEntry>[
-            CircularStackEntry(
-              <CircularSegmentEntry>[
-                CircularSegmentEntry(
-                  state.dashboardData.spentMoney /
-                      (state.dashboardData.budget.amount + 0.00001) *
-                      100,
-                  Theme.of(context).colorScheme.primary,
-                  rankKey: 'completed',
-                ),
-                CircularSegmentEntry(
-                  (1 -
-                          state.dashboardData.spentMoney /
-                              (state.dashboardData.budget.amount + 0.0001)) *
-                      100,
-                  Theme.of(context).colorScheme.outline,
-                  rankKey: 'remaining',
-                ),
-              ],
-              rankKey: 'progress',
-            ),
-          ],
-          chartType: CircularChartType.Radial,
-          edgeStyle: SegmentEdgeStyle.round,
-          holeLabel:
-              '\$${state.dashboardData.spentMoney}/${state.dashboardData.budget.amount}',
-          labelStyle: Theme.of(context).textTheme.bodyLarge,
-          percentageValues: true,
-        ),
-        // Current month label. Click on the label should open a date picker.
-        SizedBox(
-          width: 250,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              IconButton.outlined(
-                  onPressed: () {
-                    context.read<DashboardCubit>().previousMonth();
-                  },
-                  icon: const Icon(Icons.chevron_left)),
-              OutlinedButton.icon(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    final selectedMonth = await showMonthPicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2050),
-                    );
-                    if (selectedMonth != null) {
-                      cubit.getDashboardData(selectedMonth);
-                    }
-                  },
-                  label: Text(
-                    //Format date, take name of the month. Example: January 2021.
-                    _monthFormatter.format(state.dashboardData.selectedMonth),
-
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  )),
-              IconButton.outlined(
-                  onPressed: () {
-                    context.read<DashboardCubit>().nextMonth();
-                  },
-                  icon: const Icon(Icons.chevron_right)),
+    return Stack(alignment: Alignment.center, children: [
+      AnimatedCircularChart(
+        key: UniqueKey(),
+        size: const Size.square(248),
+        initialChartData: <CircularStackEntry>[
+          CircularStackEntry(
+            <CircularSegmentEntry>[
+              CircularSegmentEntry(
+                state.dashboardData.spentMoney /
+                    (state.dashboardData.budget.amount + 0.00001) *
+                    100,
+                Theme.of(context).colorScheme.primary,
+                rankKey: 'completed',
+              ),
+              CircularSegmentEntry(
+                (1 -
+                        state.dashboardData.spentMoney /
+                            (state.dashboardData.budget.amount + 0.0001)) *
+                    100,
+                Colors.white38,
+                rankKey: 'remaining',
+              ),
             ],
+            rankKey: 'progress',
           ),
-        )
-      ],
-    );
+        ],
+        chartType: CircularChartType.Radial,
+        edgeStyle: SegmentEdgeStyle.round,
+        percentageValues: true,
+      ),
+      Column(
+        children: [
+          Text(
+            '\$${state.dashboardData.spentMoney.toInt()}',
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(fontWeight: FontWeight.w700, fontSize: 32),
+          ),
+          const SizedBox(
+            width: 150,
+            child: Divider(
+              thickness: 2,
+              color: Colors.white38,
+            ),
+          ),
+          Text(
+            state.dashboardData.budget.amount.toInt().toString(),
+            style: GoogleFonts.montserrat(
+              textStyle: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.w500, fontSize: 24),
+            ),
+          ),
+        ],
+      )
+    ]);
   }
 }
 
@@ -279,6 +363,7 @@ class ExpenseListItem extends StatelessWidget {
         }
       },
       leading: CircleAvatar(
+          radius: 24,
           backgroundColor: expense.category.color.withOpacity(0.4),
           child: Icon(
             expense.category.icon,
@@ -286,15 +371,28 @@ class ExpenseListItem extends StatelessWidget {
           )),
       title: Text(
         expense.description,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: GoogleFonts.lato(
+          textStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
       ),
       subtitle: Text(
         expense.category.name,
-        style: Theme.of(context).textTheme.bodySmall,
+        style: GoogleFonts.lato(
+          textStyle: Theme.of(context)
+              .textTheme
+              .bodySmall,
+        )
       ),
       trailing: Text(
-        expense.amount.toString(),
-        style: Theme.of(context).textTheme.bodyMedium,
+        '\$${expense.amount}',
+        style: GoogleFonts.montserrat(
+          textStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+        ),
       ),
     );
   }
