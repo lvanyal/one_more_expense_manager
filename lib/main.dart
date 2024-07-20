@@ -80,9 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
         BlocProvider(create: (_) => getIt<BudgetCubit>())
       ],
       child: Scaffold(
-        appBar: AppBar(
+        appBar: _selectedIndex == 0 ? null :  AppBar(
           title: Text(switch (_selectedIndex) {
-            0 => 'See your expenses',
             1 => 'Set your budget',
             2 => 'Create your categories',
             int() => 'Track your expenses'

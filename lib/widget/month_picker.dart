@@ -236,7 +236,7 @@ class __MonthPickerState extends State<_MonthPicker> {
       style: TextButton.styleFrom(
         backgroundColor:
             isSelected ? Theme.of(context).colorScheme.primary : null,
-        primary: isSelected
+        foregroundColor: isSelected
             ? colorScheme.onPrimary
             : year == DateTime.now().year
                 ? Colors.blue
@@ -264,7 +264,7 @@ class __MonthPickerState extends State<_MonthPicker> {
       onPressed: callback,
       style: TextButton.styleFrom(
         backgroundColor: isSelected ? colorScheme.primary : null,
-        primary: isSelected
+        foregroundColor: isSelected
             ? colorScheme.onPrimary
             : date.month == DateTime.now().month
                 ? colorScheme.primary
