@@ -4,6 +4,7 @@ import 'package:circular_chart_flutter/circular_chart_flutter.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
 import 'package:copilot/dashboard/bloc/dashboard_state.dart';
 import 'package:copilot/dashboard/expense_form.dart';
+import 'package:copilot/infrastructure/extensions.dart';
 import 'package:copilot/model/expense.dart';
 import 'package:copilot/widget/month_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -285,11 +286,11 @@ class _CircularDiagram extends StatelessWidget {
                 .bodyLarge
                 ?.copyWith(fontWeight: FontWeight.w700, fontSize: 32),
           ),
-          const SizedBox(
+          SizedBox(
             width: 150,
             child: Divider(
               thickness: 2,
-              color: Colors.white38,
+              color: context.colorScheme.onPrimary,
             ),
           ),
           Text(
@@ -374,17 +375,14 @@ class ExpenseListItem extends StatelessWidget {
         style: GoogleFonts.lato(
           textStyle: Theme.of(context)
               .textTheme
-              .bodyMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+              .bodyMedium
+              ?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
-      subtitle: Text(
-        expense.category.name,
-        style: GoogleFonts.lato(
-          textStyle: Theme.of(context)
-              .textTheme
-              .bodySmall,
-        )
-      ),
+      subtitle: Text(expense.category.name,
+          style: GoogleFonts.lato(
+            textStyle: Theme.of(context).textTheme.bodySmall,
+          )),
       trailing: Text(
         '\$${expense.amount}',
         style: GoogleFonts.montserrat(

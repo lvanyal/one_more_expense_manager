@@ -80,13 +80,15 @@ class _MyHomePageState extends State<MyHomePage> {
         BlocProvider(create: (_) => getIt<BudgetCubit>())
       ],
       child: Scaffold(
-        appBar: _selectedIndex == 0 ? null :  AppBar(
-          title: Text(switch (_selectedIndex) {
-            1 => 'Set your budget',
-            2 => 'Create your categories',
-            int() => 'Track your expenses'
-          }),
-        ),
+        appBar: _selectedIndex == 0
+            ? null
+            : AppBar(
+                title: Text(switch (_selectedIndex) {
+                  1 => 'Set your budget',
+                  2 => 'Create your categories',
+                  int() => 'Track your expenses'
+                }),
+              ),
         // The body of the screen with bottom navigation bar with 3 pages: Home, Settings and About. And FAB button with plus icon in the bottom right corner.
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),

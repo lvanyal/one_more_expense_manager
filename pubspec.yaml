@@ -7,7 +7,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.1+2
 
 environment:
-  sdk: ">=3.2.0-42.1.beta <4.0.0"
+  sdk: ">=3.2.2 <4.0.0"
 
 dependencies:
   flutter:
@@ -23,7 +23,7 @@ dependencies:
   shimmer: ^3.0.0
   logger: ^2.0.2
   intl: 0.18.1
-  flutter_iconpicker: ^3.2.4
+  flutter_iconpicker: 3.2.4
   flutter_material_color_picker: ^1.2.0
   flutter_form_builder: ^9.1.1
   form_builder_validators: ^9.1.0

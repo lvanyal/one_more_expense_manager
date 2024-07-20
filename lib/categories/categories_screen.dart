@@ -6,6 +6,7 @@ import 'package:copilot/model/category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
 class CategoriesScreen extends StatelessWidget {

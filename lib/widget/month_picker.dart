@@ -234,13 +234,9 @@ class __MonthPickerState extends State<_MonthPicker> {
         },
       ),
       style: TextButton.styleFrom(
-        backgroundColor:
-            isSelected ? Theme.of(context).colorScheme.primary : null,
-        primary: isSelected
+        backgroundColor: isSelected
             ? colorScheme.onPrimary
-            : year == DateTime.now().year
-                ? Colors.blue
-                : colorScheme.onSurface.withOpacity(0.8),
+            : colorScheme.primary.withOpacity(0.12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
@@ -263,8 +259,7 @@ class __MonthPickerState extends State<_MonthPicker> {
     return TextButton(
       onPressed: callback,
       style: TextButton.styleFrom(
-        backgroundColor: isSelected ? colorScheme.primary : null,
-        primary: isSelected
+        backgroundColor: isSelected
             ? colorScheme.onPrimary
             : colorScheme.primary.withOpacity(0.12),
         shape: RoundedRectangleBorder(
