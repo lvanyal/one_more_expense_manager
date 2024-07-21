@@ -228,8 +228,7 @@ class _EditableCategoryItemState extends State<EditableCategoryItem> {
           color: temporaryColor,
         ),
         onPressed: () async {
-          IconData? icon =
-              await FlutterIconPicker.showIconPicker(context, iconPackModes: [
+          IconData? icon = await showIconPicker(context, iconPackModes: [
             IconPack.fontAwesomeIcons,
             IconPack.cupertino,
             IconPack.material,

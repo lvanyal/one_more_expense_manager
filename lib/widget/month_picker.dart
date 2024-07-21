@@ -123,7 +123,7 @@ class __MonthPickerState extends State<_MonthPicker> {
             Center(
               child: Text(
                 DateFormat.yMMM().format(_selectedDate),
-                style: theme.primaryTextTheme.subtitle1,
+                style: theme.primaryTextTheme.headlineMedium,
               ),
             ),
             Row(
@@ -141,7 +141,7 @@ class __MonthPickerState extends State<_MonthPicker> {
                   ),
                 ),
                 DefaultTextStyle(
-                  style: theme.primaryTextTheme.headline5!,
+                  style: theme.primaryTextTheme.headlineMedium!,
                   child: (_isYearSelection)
                       ? Row(
                           mainAxisSize: MainAxisSize.min,

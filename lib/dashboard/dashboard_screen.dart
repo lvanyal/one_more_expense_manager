@@ -1,6 +1,5 @@
 // Dashboard screen with circular diagram at the top that shows money spent already this month and the rest of budget. And list of expenses below.
 
-import 'package:circular_chart_flutter/circular_chart_flutter.dart';
 import 'package:copilot/dashboard/bloc/dashboard_cubit.dart';
 import 'package:copilot/dashboard/bloc/dashboard_state.dart';
 import 'package:copilot/dashboard/expense_form.dart';
@@ -13,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 final _monthFormatter = DateFormat("MMMM");
 
@@ -28,7 +28,7 @@ class DashboardScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       // The FAB button with plus icon in the bottom right corner.
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffac255e),
+        backgroundColor: const Color(0xffac255e),
         onPressed: () async {
           final state = cubit.state;
           if (state is DashboardStateLoaded) {
@@ -246,34 +246,26 @@ class _CircularDiagram extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(alignment: Alignment.center, children: [
-      AnimatedCircularChart(
-        key: UniqueKey(),
-        size: const Size.square(248),
-        initialChartData: <CircularStackEntry>[
-          CircularStackEntry(
-            <CircularSegmentEntry>[
-              CircularSegmentEntry(
-                state.dashboardData.spentMoney /
-                    (state.dashboardData.budget.amount + 0.00001) *
-                    100,
-                Theme.of(context).colorScheme.primary,
-                rankKey: 'completed',
-              ),
-              CircularSegmentEntry(
-                (1 -
-                        state.dashboardData.spentMoney /
-                            (state.dashboardData.budget.amount + 0.0001)) *
-                    100,
-                Colors.white38,
-                rankKey: 'remaining',
-              ),
-            ],
-            rankKey: 'progress',
+      SizedBox.square(
+        dimension: 248,
+        child: PieChart(
+          dataMap: {
+            'spent': state.dashboardData.spentMoney,
+          },
+          legendOptions: const LegendOptions(
+            showLegends: false,
           ),
-        ],
-        chartType: CircularChartType.Radial,
-        edgeStyle: SegmentEdgeStyle.round,
-        percentageValues: true,
+          chartType: ChartType.ring,
+          baseChartColor: Colors.grey[50]!.withOpacity(0.15),
+          colorList: [context.colorScheme.primary, Colors.white38],
+          ringStrokeWidth: 8,
+          chartValuesOptions: const ChartValuesOptions(
+            showChartValuesOutside: false,
+            showChartValues: false,
+            showChartValuesInPercentage: false,
+          ),
+          totalValue: state.dashboardData.budget.amount,
+        ),
       ),
       Column(
         children: [
@@ -292,7 +284,7 @@ class _CircularDiagram extends StatelessWidget {
             ),
           ),
           Text(
-            state.dashboardData.budget.amount.toInt().toString(),
+            '\$${state.dashboardData.budget.amount.toInt().toString()}',
             style: GoogleFonts.montserrat(
               textStyle: Theme.of(context)
                   .textTheme
