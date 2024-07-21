@@ -36,9 +36,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
-      theme: FlexThemeData.light(scheme: FlexScheme.pinkM3, useMaterial3: true),
-      darkTheme:
-          FlexThemeData.dark(scheme: FlexScheme.pinkM3, useMaterial3: true),
+      theme: FlexThemeData.dark(scheme: FlexScheme.pinkM3, useMaterial3: true),
+      // darkTheme:
+      //     FlexThemeData.dark(scheme: FlexScheme.pinkM3, useMaterial3: true),
       home: const MyHomePage(title: 'Track your expenses'),
     );
   }

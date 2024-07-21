@@ -234,7 +234,7 @@ class __MonthPickerState extends State<_MonthPicker> {
         },
       ),
       style: TextButton.styleFrom(
-        backgroundColor: isSelected
+        backgroundColor: !isSelected
             ? colorScheme.onPrimary
             : colorScheme.primary.withOpacity(0.12),
         shape: RoundedRectangleBorder(
@@ -259,7 +259,7 @@ class __MonthPickerState extends State<_MonthPicker> {
     return TextButton(
       onPressed: callback,
       style: TextButton.styleFrom(
-        backgroundColor: isSelected
+        backgroundColor: !isSelected
             ? colorScheme.onPrimary
             : colorScheme.primary.withOpacity(0.12),
         shape: RoundedRectangleBorder(
