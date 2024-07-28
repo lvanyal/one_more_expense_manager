@@ -32,7 +32,7 @@ class DashboardScreen extends StatelessWidget {
         onPressed: () async {
           final state = cubit.state;
           if (state is DashboardStateLoaded) {
-            final expense = await showModalBottomSheet<Expense?>(
+            final result = await showModalBottomSheet<ExpenseFormResult?>(
               isScrollControlled: true,
               context: context,
               builder: (context) {
@@ -41,8 +41,8 @@ class DashboardScreen extends StatelessWidget {
                 );
               },
             );
-            if (expense != null) {
-              cubit.addExpense(expense);
+            if (result?.expense != null) {
+              cubit.addExpense(result!.expense!);
             }
           }
         },
@@ -251,6 +251,8 @@ class _CircularDiagram extends StatelessWidget {
         child: PieChart(
           dataMap: {
             'spent': state.dashboardData.spentMoney,
+            'left': state.dashboardData.budget.amount -
+                state.dashboardData.spentMoney,
           },
           legendOptions: const LegendOptions(
             showLegends: false,
@@ -280,7 +282,7 @@ class _CircularDiagram extends StatelessWidget {
             width: 150,
             child: Divider(
               thickness: 2,
-              color: context.colorScheme.onPrimary,
+              color: context.colorScheme.onBackground,
             ),
           ),
           Text(
@@ -338,18 +340,20 @@ class ExpenseListItem extends StatelessWidget {
       onTap: () async {
         final state = cubit.state;
         if (state is DashboardStateLoaded) {
-          final expense = await showModalBottomSheet<Expense?>(
+          final result = await showModalBottomSheet<ExpenseFormResult?>(
             isScrollControlled: true,
             context: context,
             builder: (context) {
               return ExpenseForm(
                 state.categories,
-                expense: this.expense,
+                expense: expense,
               );
             },
           );
-          if (expense != null) {
-            cubit.updateExpense(expense);
+          if (result?.isRemoved == true) {
+            cubit.removeExpense(expense);
+          } else if (result?.expense != null) {
+            cubit.updateExpense(result!.expense!);
           }
         }
       },

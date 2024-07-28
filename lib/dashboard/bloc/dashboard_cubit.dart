@@ -82,4 +82,18 @@ class DashboardCubit extends Cubit<DashboardState> {
       ));
     }
   }
+
+  void removeExpense(Expense expense) async{
+    final currentState = state;
+    if (currentState is DashboardStateLoaded) {
+      expenseRepository.removeExpense(expense);
+      final dashboardData = await dashboardRepository
+          .getDashboardData(currentState.dashboardData.selectedMonth);
+
+      emit(DashboardStateLoaded(
+        dashboardData: dashboardData,
+        categories: currentState.categories,
+      ));
+    }
+  }
 }

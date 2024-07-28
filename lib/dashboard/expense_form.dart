@@ -191,28 +191,45 @@ class ExpenseFormState extends State<ExpenseForm> {
               const SizedBox(
                 height: 8,
               ),
-              OutlinedButton(
-                onPressed: () {
-                  final valid =
-                      _formKey.currentState?.saveAndValidate() ?? false;
-                  if (valid) {
-                    final expense = Expense(
-                      id: widget.expense?.id ?? DateTime.now().toString(),
-                      amount: double.parse(
-                          _formKey.currentState?.value['budget'] ?? '0'),
-                      description:
-                          _formKey.currentState?.value['description'] ?? '',
-                      date: _formKey.currentState?.value['date'] ??
-                          DateTime.now(),
-                      category: _selectedCategory!,
-                    );
-                    Navigator.of(context).pop(expense);
-                  }
-                },
-                child: Text(
-                  'Save',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      final valid =
+                          _formKey.currentState?.saveAndValidate() ?? false;
+                      if (valid) {
+                        final expense = Expense(
+                          id: widget.expense?.id ?? DateTime.now().toString(),
+                          amount: double.parse(
+                              _formKey.currentState?.value['budget'] ?? '0'),
+                          description:
+                              _formKey.currentState?.value['description'] ?? '',
+                          date: _formKey.currentState?.value['date'] ??
+                              DateTime.now(),
+                          category: _selectedCategory!,
+                        );
+                        Navigator.of(context)
+                            .pop(ExpenseFormResult(expense: expense));
+                      }
+                    },
+                    child: Text(
+                      widget.expense != null ? 'Update' : 'Save',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                  if (widget.expense != null)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pop(ExpenseFormResult(isRemoved: true));
+                      },
+                      child: Text(
+                        'Remove',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -220,4 +237,11 @@ class ExpenseFormState extends State<ExpenseForm> {
       ),
     );
   }
+}
+
+class ExpenseFormResult {
+  final Expense? expense;
+  final bool? isRemoved;
+
+  ExpenseFormResult({this.expense, this.isRemoved});
 }

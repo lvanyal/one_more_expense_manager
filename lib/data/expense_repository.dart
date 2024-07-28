@@ -22,4 +22,9 @@ class ExpenseRepository {
     final dataSource = await localDataSource;
     return dataSource.updateExpense(expense);
   }
+
+  Future<void> removeExpense(Expense expense) async {
+    final dataSource = await localDataSource;
+    return dataSource.deleteExpense(expense);
+  }
 }
